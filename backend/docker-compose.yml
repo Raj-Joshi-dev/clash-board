@@ -2,34 +2,21 @@ services:
   # Laravel App
   app:
     build:
-      context: ./backend
+      context: .
       dockerfile: Dockerfile
     container_name: clash-board-backend
     restart: unless-stopped
-    working_dir: /var/www
+    working_dir: /var/www/html
+    ports:
+      - '${APP_PORT:-80}:80'
     volumes:
-      - ./backend:/var/www
+      - .:/var/www/html
     networks:
       - clash-board-network
     depends_on:
       - db
     env_file:
-      - ./backend/.env
-
-  # Nginx Service
-  webserver:
-    image: nginx:alpine
-    container_name: clash-board-webserver
-    restart: unless-stopped
-    ports:
-      - "8000:80"
-    volumes:
-      - ./backend:/var/www
-      - ./nginx/conf.d/:/etc/nginx/conf.d/
-    networks:
-      - clash-board-network
-    depends_on:
-      - app
+      - .env
 
   # PostgreSQL Service
   db:
