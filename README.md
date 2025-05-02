@@ -6,10 +6,24 @@ A Progressive Web App (PWA) displaying stats of players, clans, clan wars, capit
 
 ```
 clash-board/
-├── backend/          # Laravel API
-├── frontend/         # Vue.js PWA (to be added)
-├── nginx/            # Nginx configuration
-└── README.md         # Project documentation
+├── backend/                # Laravel API with Apache server
+│   ├── app/                # Application code
+│   │   ├── Http/           # HTTP layer (controllers, middleware, etc.)
+│   │   ├── Models/         # Eloquent models
+│   │   └── Providers/      # Service providers
+│   ├── bootstrap/          # Framework bootstrap files
+│   ├── config/             # Configuration files
+│   ├── database/           # Database migrations, seeders, and factories
+│   │   ├── migrations/     # Database schema definitions
+│   │   ├── factories/      # Model factories for testing
+│   │   └── seeders/        # Database seeders
+│   ├── public/             # Publicly accessible files
+│   ├── resources/          # Views, CSS, JS, and other resources
+│   ├── routes/             # API and web route definitions
+│   ├── storage/            # Application storage
+│   └── tests/              # Automated tests
+├── frontend/               # Vue.js PWA (to be added)
+└── README.md               # Project documentation
 ```
 
 ## Prerequisites
@@ -35,47 +49,41 @@ clash-board/
    cp backend/.env.example backend/.env
    ```
 
-3. Create a root .env file for Docker:
+3. Start the Docker containers:
 
    ```
-   echo "DB_DATABASE=clash_board
-   DB_USERNAME=postgres
-   DB_PASSWORD=secret" > .env
-   ```
-
-4. Start the Docker containers:
-
-   ```
+   cd backend
    docker-compose up -d
    ```
 
-5. Install Laravel dependencies:
+4. Install Laravel dependencies:
 
    ```
    docker-compose exec app composer install
    ```
 
-6. Generate application key:
+5. Generate application key:
 
    ```
    docker-compose exec app php artisan key:generate
    ```
 
-7. Run migrations:
+6. Run migrations and seed the database:
 
    ```
-   docker-compose exec app php artisan migrate
+   docker-compose exec app php artisan migrate --seed
    ```
 
-8. Set proper permissions for storage:
+7. Set proper permissions for storage:
 
    ```
    docker-compose exec app chmod -R 777 storage bootstrap/cache
    ```
 
-9. Seed the database (optional):
+8. Create storage link:
+
    ```
-   docker-compose exec app php artisan db:seed
+   docker-compose exec app php artisan storage:link
    ```
 
 The Laravel API is now available at http://localhost:8000/api
@@ -91,6 +99,8 @@ Coming soon...
 - API routes are defined in `backend/routes/api.php`
 - Controllers are located in `backend/app/Http/Controllers`
 - Models are located in `backend/app/Models`
+- Database migrations in `backend/database/migrations`
+- Environment configuration in `backend/.env`
 
 ### Database
 
@@ -101,37 +111,6 @@ The application uses PostgreSQL for the database.
 - **Password**: secret
 - **Host**: localhost
 - **Port**: 5432 (mapped from container)
-
-### Useful Commands
-
-- Start Docker containers:
-
-  ```
-  docker-compose up -d
-  ```
-
-- Stop Docker containers:
-
-  ```
-  docker-compose down
-  ```
-
-- Access PostgreSQL:
-
-  ```
-  docker-compose exec db psql -U postgres -d clash_board
-  ```
-
-- Run Laravel commands:
-
-  ```
-  docker-compose exec app php artisan <command>
-  ```
-
-- View logs:
-  ```
-  docker-compose logs -f app
-  ```
 
 ## License
 
