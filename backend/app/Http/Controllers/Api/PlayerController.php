@@ -244,7 +244,8 @@ class PlayerController extends Controller
         return response()->json([
             'success' => true,
             'message' => $message,
-            'data' => $player
+            'data' => $player,
+            'fetched_at' => now()->toIso8601String()
         ], $player->wasRecentlyCreated ? 201 : 200);
     }
 }

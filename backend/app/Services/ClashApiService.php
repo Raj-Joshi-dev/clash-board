@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Client\Response;
+use Illuminate\Support\Facades\Log;
 
 class ClashApiService
 {
@@ -48,16 +49,16 @@ class ClashApiService
     {
         // Ensure the player tag starts with a #
         $playerTag = '#' . ltrim($playerTag, '#');
-        
+
         // URL encode the player tag
         $encodedTag = urlencode($playerTag);
-        
+
         $response = $this->makeRequest("/players/{$encodedTag}");
-        
+
         if ($response->successful()) {
             return $response->json();
         }
-        
+
         return null;
     }
 
@@ -71,16 +72,16 @@ class ClashApiService
     {
         // Ensure the clan tag starts with a #
         $clanTag = '#' . ltrim($clanTag, '#');
-        
+
         // URL encode the clan tag
         $encodedTag = urlencode($clanTag);
-        
+
         $response = $this->makeRequest("/clans/{$encodedTag}");
-        
+
         if ($response->successful()) {
             return $response->json();
         }
-        
+
         return null;
     }
 }
