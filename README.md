@@ -90,7 +90,7 @@ The Laravel API is now available at http://localhost:8000/api
 
 ### Frontend Setup (Vue.js PWA)
 
-Coming soon...
+Coming soon....
 
 ## Development
 
