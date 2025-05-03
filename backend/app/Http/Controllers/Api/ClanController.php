@@ -7,6 +7,7 @@ use App\Models\Clan;
 use App\Services\ClashApiService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 
 class ClanController extends Controller
 {
@@ -194,6 +195,14 @@ class ClanController extends Controller
         // Check if clan already exists in our database
         $clan = Clan::where('tag', $tag)->first();
 
+        // Prepare clan data - avoid using direct boolean values
+        $isFamilyFriendly = isset($clanData['isFamilyFriendly']) ? $clanData['isFamilyFriendly'] : false;
+        $isWarLogPublic = isset($clanData['isWarLogPublic']) ? $clanData['isWarLogPublic'] : true;
+
+        // Ensure proper strings are used for PostgreSQL boolean values
+        $isFamilyFriendlyValue = $isFamilyFriendly ? 'true' : 'false';
+        $isWarLogPublicValue = $isWarLogPublic ? 'true' : 'false';
+
         // Prepare clan data
         $clanAttributes = [
             'tag' => ltrim($clanData['tag'], '#'),
@@ -201,7 +210,7 @@ class ClanController extends Controller
             'type' => $clanData['type'],
             'description' => $clanData['description'] ?? null,
             'location_name' => $clanData['location']['name'] ?? null,
-            'is_family_friendly' => $clanData['isFamilyFriendly'] ?? false,
+            'is_family_friendly' => DB::raw($isFamilyFriendlyValue),
             'badge_urls' => $clanData['badgeUrls'],
             'clan_level' => $clanData['clanLevel'],
             'clan_points' => $clanData['clanPoints'] ?? 0,
@@ -214,7 +223,7 @@ class ClanController extends Controller
             'war_wins' => $clanData['warWins'] ?? 0,
             'war_ties' => $clanData['warTies'] ?? 0,
             'war_losses' => $clanData['warLosses'] ?? 0,
-            'is_war_log_public' => $clanData['isWarLogPublic'] ?? true,
+            'is_war_log_public' => DB::raw($isWarLogPublicValue),
             'war_league_name' => $clanData['warLeague']['name'] ?? null,
             'members' => $clanData['members'] ?? 0,
             'member_list' => $clanData['memberList'] ?? null,
