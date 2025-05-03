@@ -35,4 +35,8 @@ return [
         ],
     ],
 
+    'clash_of_clans' => [
+        'api_token' => env('CLASH_OF_CLANS_API_TOKEN'),
+    ],
+
 ];

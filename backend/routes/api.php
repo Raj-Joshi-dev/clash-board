@@ -7,8 +7,9 @@ use Illuminate\Support\Facades\Route;
 // Public routes
 Route::prefix('players')->group(function () {
     Route::get('/', [PlayerController::class, 'index']);
-    Route::get('/{tag}', [PlayerController::class, 'show']);
     Route::get('/create-dummy', [PlayerController::class, 'createDummy']);
+    Route::get('/fetch-from-api/{tag}', [PlayerController::class, 'fetchFromApi']);
+    Route::get('/{tag}', [PlayerController::class, 'show']);
 });
 
 // Protected routes (require authentication)

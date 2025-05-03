@@ -4,11 +4,25 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Player;
+use App\Services\ClashApiService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
 class PlayerController extends Controller
 {
+    /**
+     * The Clash API service instance.
+     */
+    protected ClashApiService $clashApiService;
+
+    /**
+     * Create a new controller instance.
+     */
+    public function __construct(ClashApiService $clashApiService)
+    {
+        $this->clashApiService = $clashApiService;
+    }
+
     /**
      * Display a listing of players.
      */
@@ -57,9 +71,9 @@ class PlayerController extends Controller
         // In Clash of Clans, player tags often start with #, but in URLs they might be URL encoded
         // Remove # if it's part of the tag
         $tag = ltrim($tag, '#');
-        
+
         $player = Player::where('tag', $tag)->first();
-        
+
         if (!$player) {
             return response()->json([
                 'success' => false,
@@ -79,9 +93,9 @@ class PlayerController extends Controller
     public function update(Request $request, string $tag): JsonResponse
     {
         $tag = ltrim($tag, '#');
-        
+
         $player = Player::where('tag', $tag)->first();
-        
+
         if (!$player) {
             return response()->json([
                 'success' => false,
@@ -117,9 +131,9 @@ class PlayerController extends Controller
     public function destroy(string $tag): JsonResponse
     {
         $tag = ltrim($tag, '#');
-        
+
         $player = Player::where('tag', $tag)->first();
-        
+
         if (!$player) {
             return response()->json([
                 'success' => false,
@@ -134,7 +148,7 @@ class PlayerController extends Controller
             'message' => 'Player deleted successfully'
         ]);
     }
-    
+
     /**
      * Create a dummy player (for testing and demo purposes).
      */
@@ -165,5 +179,72 @@ class PlayerController extends Controller
             'message' => 'Dummy player created successfully',
             'data' => $player
         ], 201);
+    }
+
+    /**
+     * Fetch a player from the Clash of Clans API and store/update in our database.
+     */
+    public function fetchFromApi(string $tag): JsonResponse
+    {
+        $tag = ltrim($tag, '#');
+
+        // Get player data from the Clash API
+        $playerData = $this->clashApiService->getPlayer($tag);
+
+        if (!$playerData) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Player not found in Clash of Clans API'
+            ], 404);
+        }
+
+        // Check if player already exists in our database
+        $player = Player::where('tag', $tag)->first();
+
+        // Prepare player data
+        $playerAttributes = [
+            'name' => $playerData['name'],
+            'tag' => ltrim($playerData['tag'], '#'),
+            'town_hall_level' => $playerData['townHallLevel'],
+            'xp' => $playerData['expLevel'],
+            'trophies' => $playerData['trophies'],
+            'best_trophies' => $playerData['bestTrophies'],
+            'war_stars' => $playerData['warStars'],
+        ];
+
+        // Add clan information if available
+        if (isset($playerData['clan'])) {
+            $playerAttributes['clan_tag'] = ltrim($playerData['clan']['tag'], '#');
+            $playerAttributes['clan_name'] = $playerData['clan']['name'];
+            $playerAttributes['role'] = $playerData['role'] ?? 'Member';
+        }
+
+        // Add heroes if available
+        if (isset($playerData['heroes']) && is_array($playerData['heroes'])) {
+            $heroes = [];
+            foreach ($playerData['heroes'] as $hero) {
+                $heroes[] = [
+                    'name' => $hero['name'],
+                    'level' => $hero['level'],
+                    'maxLevel' => $hero['maxLevel'],
+                ];
+            }
+            $playerAttributes['heroes'] = $heroes;
+        }
+
+        // Create or update the player
+        if ($player) {
+            $player->update($playerAttributes);
+            $message = 'Player updated successfully from Clash of Clans API';
+        } else {
+            $player = Player::create($playerAttributes);
+            $message = 'Player fetched successfully from Clash of Clans API';
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => $message,
+            'data' => $player
+        ], $player->wasRecentlyCreated ? 201 : 200);
     }
 }
