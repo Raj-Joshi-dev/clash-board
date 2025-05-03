@@ -84,4 +84,37 @@ class ClashApiService
 
         return null;
     }
+
+    /**
+     * Fetch capital raid seasons for a clan.
+     *
+     * @param string $clanTag The clan tag (with or without #).
+     * @param array $query Optional query parameters (limit, before, after).
+     * @return array|null The capital raid data or null if not found.
+     */
+    public function getCapitalRaids(string $clanTag, array $query = []): ?array
+    {
+        // Ensure the clan tag starts with a #
+        $clanTag = '#' . ltrim($clanTag, '#');
+
+        // URL encode the clan tag
+        $encodedTag = urlencode($clanTag);
+
+        $response = $this->makeRequest("/clans/{$encodedTag}/capitalraidseasons", $query);
+
+        if ($response->successful()) {
+            return $response->json();
+        }
+
+        // Log error if API call fails
+        if ($response->failed()) {
+            Log::error('Failed to fetch capital raids', [
+                'clan_tag' => $clanTag,
+                'status' => $response->status(),
+                'response' => $response->body()
+            ]);
+        }
+
+        return null;
+    }
 }

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\PlayerController;
 use App\Http\Controllers\Api\ClanController;
+use App\Http\Controllers\Api\CapitalRaidController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -17,6 +18,9 @@ Route::prefix('clans')->group(function () {
     Route::get('/', [ClanController::class, 'index']);
     Route::get('/fetch-from-api/{tag}', [ClanController::class, 'fetchFromApi']);
     Route::get('/{tag}', [ClanController::class, 'show']);
+
+    // Capital raid endpoints
+    Route::get('/{tag}/capital-raids', [CapitalRaidController::class, 'getCapitalRaids']);
 });
 
 // Protected routes (require authentication)
