@@ -22,7 +22,7 @@ const searchPlayer = async () => {
 <template>
   <div class="player-search bg-clash-light dark:bg-clash-dark p-4 rounded-lg shadow-md">
     <h2 class="text-xl font-bold mb-4 text-clash-blue">Find Player</h2>
-    
+
     <div class="flex flex-col sm:flex-row gap-2">
       <div class="flex-grow">
         <input
@@ -38,7 +38,7 @@ const searchPlayer = async () => {
           Please enter a valid player tag
         </p>
       </div>
-      
+
       <button
         @click="searchPlayer"
         class="bg-clash-blue hover:bg-blue-600 text-white px-4 py-2 rounded transition-colors"
@@ -48,8 +48,11 @@ const searchPlayer = async () => {
         <span v-else>Search</span>
       </button>
     </div>
-    
-    <div v-if="playerStore.error" class="mt-4 p-3 bg-clash-red bg-opacity-10 text-clash-red rounded">
+
+    <div
+      v-if="playerStore.error"
+      class="mt-4 p-3 bg-clash-red bg-opacity-10 text-clash-red rounded"
+    >
       {{ playerStore.error }}
     </div>
   </div>

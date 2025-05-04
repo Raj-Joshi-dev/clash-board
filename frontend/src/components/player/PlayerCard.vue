@@ -16,15 +16,17 @@ const formatRatio = (value: number) => {
   <div v-if="player" class="player-card bg-clash-light dark:bg-clash-dark p-6 rounded-lg shadow-lg">
     <div class="flex flex-col md:flex-row items-start gap-6">
       <!-- Player Avatar -->
-      <div class="avatar bg-clash-blue rounded-full w-24 h-24 flex items-center justify-center text-white text-4xl font-bold">
+      <div
+        class="avatar bg-clash-blue rounded-full w-24 h-24 flex items-center justify-center text-white text-4xl font-bold"
+      >
         {{ player.name.charAt(0).toUpperCase() }}
       </div>
-      
+
       <!-- Player Info -->
       <div class="flex-grow">
         <h2 class="text-2xl font-bold text-clash-blue">{{ player.name }}</h2>
         <p class="text-gray-600 dark:text-gray-300">{{ player.id }}</p>
-        
+
         <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
           <!-- Main Stats -->
           <div>
@@ -48,7 +50,7 @@ const formatRatio = (value: number) => {
               </div>
             </div>
           </div>
-          
+
           <!-- Builder Base Stats -->
           <div>
             <h3 class="text-lg font-semibold mb-2 border-b border-gray-200">Builder Base</h3>
@@ -72,7 +74,7 @@ const formatRatio = (value: number) => {
             </div>
           </div>
         </div>
-        
+
         <!-- Donations -->
         <div class="mt-4">
           <h3 class="text-lg font-semibold mb-2 border-b border-gray-200">Donations</h3>

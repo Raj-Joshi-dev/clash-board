@@ -30,18 +30,18 @@ export const usePlayerStore = defineStore('player', {
   state: (): PlayerState => ({
     player: null,
     isLoading: false,
-    error: null
+    error: null,
   }),
-  
+
   actions: {
     async fetchPlayer(tag: string) {
       this.isLoading = true
       this.error = null
-      
+
       try {
         // Clean the tag by removing the # if present
         const cleanTag = tag.startsWith('#') ? tag.substring(1) : tag
-        
+
         const response = await axios.get(`/api/players/${cleanTag}`)
         this.player = response.data.data
       } catch (error: any) {
@@ -51,17 +51,17 @@ export const usePlayerStore = defineStore('player', {
         this.isLoading = false
       }
     },
-    
+
     clearPlayer() {
       this.player = null
-    }
+    },
   },
-  
+
   getters: {
     isPlayerLoaded: (state) => !!state.player,
     donationRatio: (state) => {
       if (!state.player || state.player.donationsReceived === 0) return 0
       return state.player.donations / state.player.donationsReceived
-    }
-  }
+    },
+  },
 })

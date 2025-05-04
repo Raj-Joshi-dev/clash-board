@@ -22,7 +22,7 @@ const searchClan = async () => {
 <template>
   <div class="clan-search bg-clash-light dark:bg-clash-dark p-4 rounded-lg shadow-md">
     <h2 class="text-xl font-bold mb-4 text-clash-blue">Find Clan</h2>
-    
+
     <div class="flex flex-col sm:flex-row gap-2">
       <div class="flex-grow">
         <input
@@ -34,11 +34,9 @@ const searchClan = async () => {
           @input="validateTag"
           @keyup.enter="searchClan"
         />
-        <p v-if="!isValidTag" class="text-clash-red text-sm mt-1">
-          Please enter a valid clan tag
-        </p>
+        <p v-if="!isValidTag" class="text-clash-red text-sm mt-1">Please enter a valid clan tag</p>
       </div>
-      
+
       <button
         @click="searchClan"
         class="bg-clash-blue hover:bg-blue-600 text-white px-4 py-2 rounded transition-colors"
@@ -48,7 +46,7 @@ const searchClan = async () => {
         <span v-else>Search</span>
       </button>
     </div>
-    
+
     <div v-if="clanStore.error" class="mt-4 p-3 bg-clash-red bg-opacity-10 text-clash-red rounded">
       {{ clanStore.error }}
     </div>
