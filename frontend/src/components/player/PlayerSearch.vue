@@ -15,7 +15,7 @@ const validateTag = () => {
 
 const searchPlayer = async () => {
   if (!validateTag()) return
-  // console.log('Searching for player with tag:', playerTag.value)
+  console.log('Searching for player with tag:', playerTag.value)
   await playerStore.fetchPlayer(playerTag.value)
 }
 </script>

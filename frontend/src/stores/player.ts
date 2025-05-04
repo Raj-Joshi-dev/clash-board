@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import axios from 'axios'
+import api from '../services/api'
 
 export interface Player {
   id: number
@@ -48,7 +48,7 @@ export const usePlayerStore = defineStore('player', {
         // Clean the tag by removing the # if present
         const cleanTag = tag.startsWith('#') ? tag.substring(1) : tag
 
-        const response = await axios.get(`/api/players/${cleanTag}`)
+        const response = await api.get(`/players/${cleanTag}`)
 
         // Map backend fields to frontend model
         if (response.data.data) {
