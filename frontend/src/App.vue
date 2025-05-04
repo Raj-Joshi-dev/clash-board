@@ -1,87 +1,39 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
+  <div class="app-container min-h-screen bg-gray-100 dark:bg-gray-900">
+    <header class="bg-clash-blue text-white p-4 shadow-md">
+      <div class="container mx-auto flex justify-between items-center">
+        <h1 class="text-2xl font-bold">Clash Board</h1>
+        <nav class="space-x-4">
+          <RouterLink to="/" class="hover:text-gray-200 transition-colors">Home</RouterLink>
+          <RouterLink to="/clans" class="hover:text-gray-200 transition-colors">Clans</RouterLink>
+        </nav>
+      </div>
+    </header>
 
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
+    <main class="container mx-auto p-4">
+      <RouterView />
+    </main>
 
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
-    </div>
-
-    <div class="p-4 bg-blue-500 text-white font-bold">Tailwind is working!</div>
-  </header>
-
-  <RouterView />
+    <footer class="bg-gray-800 text-white p-4 mt-8">
+      <div class="container mx-auto text-center">
+        <p>Clash Board © 2025</p>
+      </div>
+    </footer>
+  </div>
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
+<style>
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
 }
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
-}
-
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
-
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-}
-
-nav a:first-of-type {
-  border: 0;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
+.container {
+  max-width: 1200px;
 }
 </style>

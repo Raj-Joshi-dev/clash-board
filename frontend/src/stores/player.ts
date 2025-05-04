@@ -2,20 +2,26 @@ import { defineStore } from 'pinia'
 import axios from 'axios'
 
 export interface Player {
-  id: string
+  id: number
   name: string
-  townHallLevel: number
+  tag: string
+  town_hall_level: number
+  xp: number
   trophies: number
+  best_trophies: number
+  war_stars: number
+  clan_tag?: string
+  clan_name?: string
+  role?: string
+  heroes?: Array<{
+    name: string
+    level: number
+    maxLevel: number
+  }>
+  // Keep some convenience computed properties as getters
+  townHallLevel: number
   bestTrophies: number
   warStars: number
-  attackWins: number
-  defenseWins: number
-  builderHallLevel: number
-  versusTrophies: number
-  bestVersusTrophies: number
-  versusBattleWins: number
-  role: string
-  clanRank: number
   donations: number
   donationsReceived: number
 }
@@ -43,7 +49,22 @@ export const usePlayerStore = defineStore('player', {
         const cleanTag = tag.startsWith('#') ? tag.substring(1) : tag
 
         const response = await axios.get(`/api/players/${cleanTag}`)
-        this.player = response.data.data
+
+        // Map backend fields to frontend model
+        if (response.data.data) {
+          const playerData = response.data.data
+
+          // Add computed properties to match the frontend expected structure
+          playerData.townHallLevel = playerData.town_hall_level
+          playerData.bestTrophies = playerData.best_trophies
+          playerData.warStars = playerData.war_stars
+
+          // Default to 0 for donations if not provided
+          playerData.donations = playerData.donations || 0
+          playerData.donationsReceived = playerData.donations_received || 0
+
+          this.player = playerData
+        }
       } catch (error: any) {
         this.error = error.response?.data?.message || 'Failed to fetch player data'
         console.error('Error fetching player:', error)

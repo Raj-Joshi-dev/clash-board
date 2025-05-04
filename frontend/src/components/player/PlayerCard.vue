@@ -25,7 +25,19 @@ const formatRatio = (value: number) => {
       <!-- Player Info -->
       <div class="flex-grow">
         <h2 class="text-2xl font-bold text-clash-blue">{{ player.name }}</h2>
-        <p class="text-gray-600 dark:text-gray-300">{{ player.id }}</p>
+        <p class="text-gray-600 dark:text-gray-300">#{{ player.tag }}</p>
+
+        <!-- Clan info if available -->
+        <div v-if="player.clan_name" class="mt-2">
+          <span class="text-gray-700 dark:text-gray-400">Clan: </span>
+          <span class="font-semibold">{{ player.clan_name }}</span>
+          <span
+            v-if="player.role"
+            class="ml-2 px-2 py-0.5 bg-clash-blue bg-opacity-10 text-clash-blue rounded-full text-xs"
+          >
+            {{ player.role }}
+          </span>
+        </div>
 
         <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
           <!-- Main Stats -->
@@ -34,7 +46,11 @@ const formatRatio = (value: number) => {
             <div class="space-y-2">
               <div class="flex justify-between">
                 <span>Town Hall Level</span>
-                <span class="font-semibold">{{ player.townHallLevel }}</span>
+                <span class="font-semibold">{{ player.town_hall_level }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span>XP Level</span>
+                <span class="font-semibold">{{ player.xp }}</span>
               </div>
               <div class="flex justify-between">
                 <span>Trophies</span>
@@ -42,54 +58,42 @@ const formatRatio = (value: number) => {
               </div>
               <div class="flex justify-between">
                 <span>Best Trophies</span>
-                <span class="font-semibold">{{ player.bestTrophies }}</span>
+                <span class="font-semibold">{{ player.best_trophies }}</span>
               </div>
               <div class="flex justify-between">
                 <span>War Stars</span>
-                <span class="font-semibold">{{ player.warStars }}</span>
+                <span class="font-semibold">{{ player.war_stars }}</span>
               </div>
             </div>
           </div>
 
-          <!-- Builder Base Stats -->
-          <div>
-            <h3 class="text-lg font-semibold mb-2 border-b border-gray-200">Builder Base</h3>
+          <!-- Heroes if available -->
+          <div v-if="player.heroes && player.heroes.length > 0">
+            <h3 class="text-lg font-semibold mb-2 border-b border-gray-200">Heroes</h3>
+            <div class="space-y-2">
+              <div v-for="hero in player.heroes" :key="hero.name" class="flex justify-between">
+                <span>{{ hero.name }}</span>
+                <span class="font-semibold">{{ hero.level }}/{{ hero.maxLevel }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Donations section if available -->
+          <div v-if="'donations' in player">
+            <h3 class="text-lg font-semibold mb-2 border-b border-gray-200">Donations</h3>
             <div class="space-y-2">
               <div class="flex justify-between">
-                <span>Builder Hall Level</span>
-                <span class="font-semibold">{{ player.builderHallLevel }}</span>
+                <span>Donations</span>
+                <span class="font-semibold">{{ player.donations }}</span>
               </div>
               <div class="flex justify-between">
-                <span>Trophies</span>
-                <span class="font-semibold">{{ player.versusTrophies }}</span>
+                <span>Donations Received</span>
+                <span class="font-semibold">{{ player.donationsReceived }}</span>
               </div>
               <div class="flex justify-between">
-                <span>Best Trophies</span>
-                <span class="font-semibold">{{ player.bestVersusTrophies }}</span>
+                <span>Ratio</span>
+                <span class="font-semibold">{{ formatRatio(playerStore.donationRatio) }}</span>
               </div>
-              <div class="flex justify-between">
-                <span>Battle Wins</span>
-                <span class="font-semibold">{{ player.versusBattleWins }}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Donations -->
-        <div class="mt-4">
-          <h3 class="text-lg font-semibold mb-2 border-b border-gray-200">Donations</h3>
-          <div class="space-y-2">
-            <div class="flex justify-between">
-              <span>Donations</span>
-              <span class="font-semibold">{{ player.donations }}</span>
-            </div>
-            <div class="flex justify-between">
-              <span>Donations Received</span>
-              <span class="font-semibold">{{ player.donationsReceived }}</span>
-            </div>
-            <div class="flex justify-between">
-              <span>Ratio</span>
-              <span class="font-semibold">{{ formatRatio(playerStore.donationRatio) }}</span>
             </div>
           </div>
         </div>

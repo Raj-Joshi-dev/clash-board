@@ -15,6 +15,8 @@ const validateTag = () => {
 
 const searchPlayer = async () => {
   if (!validateTag()) return
+  console.log('Searching for player with tag:', playerTag.value)
+
   await playerStore.fetchPlayer(playerTag.value)
 }
 </script>
@@ -29,7 +31,7 @@ const searchPlayer = async () => {
           v-model="playerTag"
           type="text"
           placeholder="Enter player tag (e.g. #ABCDEF12)"
-          class="w-full p-2 border border-gray-300 rounded"
+          class="w-full p-2 border border-gray-300 rounded text-black dark:text-white bg-white dark:bg-clash-dark"
           :class="{ 'border-clash-red': !isValidTag }"
           @input="validateTag"
           @keyup.enter="searchPlayer"
