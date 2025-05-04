@@ -1,60 +1,40 @@
 import { defineStore } from 'pinia'
-import axios from 'axios'
+import api from '@/services/api'
 
 export interface ClanMember {
   tag: string
   name: string
   role: string
   expLevel: number
-  league: {
-    id: number
-    name: string
-    iconUrls: {
-      small: string
-      medium: string
-      large: string
-    }
-  }
   trophies: number
-  versusTrophies: number
-  clanRank: number
-  previousClanRank: number
   donations: number
   donationsReceived: number
 }
 
 export interface Clan {
+  id: number
   tag: string
   name: string
   type: string
-  description: string
-  location: {
-    id: number
-    name: string
-    isCountry: boolean
-    countryCode: string
-  }
-  badgeUrls: {
-    small: string
-    medium: string
-    large: string
-  }
-  clanLevel: number
-  clanPoints: number
-  clanVersusPoints: number
-  requiredTrophies: number
-  warFrequency: string
-  warWinStreak: number
-  warWins: number
-  warTies: number
-  warLosses: number
-  isWarLogPublic: boolean
-  warLeague: {
-    id: number
-    name: string
-  }
+  description?: string
+  location_name?: string
+  is_family_friendly: boolean
+  badge_urls: Record<string, string>
+  clan_level: number
+  clan_points: number
+  clan_builder_base_points: number
+  clan_capital_points: number
+  capital_league_name?: string
+  required_trophies: number
+  war_frequency?: string
+  war_win_streak: number
+  war_wins: number
+  war_ties: number
+  war_losses: number
+  is_war_log_public: boolean
+  war_league_name?: string
   members: number
-  memberList: ClanMember[]
+  memberList?: ClanMember[]
 }
 
 interface ClanState {
@@ -79,7 +59,7 @@ export const useClanStore = defineStore('clan', {
         // Clean the tag by removing the # if present
         const cleanTag = tag.startsWith('#') ? tag.substring(1) : tag
 
-        const response = await axios.get(`/api/clans/${cleanTag}`)
+        const response = await api.get(`/clans/${cleanTag}`)
         this.clan = response.data.data
       } catch (error: any) {
         this.error = error.response?.data?.message || 'Failed to fetch clan data'
