@@ -112,6 +112,10 @@ The application uses PostgreSQL for the database.
 - **Host**: localhost
 - **Port**: 5432 (mapped from container)
 
+## Test Data
+Test player tag: #QYPYRQV0
+Test clan tag: #9PLULVPC
+
 ## License
 
 [MIT](LICENSE)

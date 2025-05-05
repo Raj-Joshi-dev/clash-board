@@ -19,11 +19,17 @@ class ClashApiService
     protected string $apiToken;
 
     /**
+     * Whether to verify SSL certificates when making API requests.
+     */
+    protected bool $verifySSL;
+
+    /**
      * Create a new ClashApiService instance.
      */
     public function __construct()
     {
         $this->apiToken = config('services.clash_of_clans.api_token');
+        $this->verifySSL = env('CLASH_API_VERIFY_SSL', true);
     }
 
     /**
@@ -36,6 +42,7 @@ class ClashApiService
     protected function makeRequest(string $endpoint, array $query = []): Response
     {
         return Http::withToken($this->apiToken)
+            ->withOptions(['verify' => $this->verifySSL]) // Use environment variable to control SSL verification
             ->get("{$this->baseUrl}{$endpoint}", $query);
     }
 
