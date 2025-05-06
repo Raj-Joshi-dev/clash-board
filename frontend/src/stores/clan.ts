@@ -37,7 +37,7 @@ export interface Clan {
   is_war_log_public: boolean
   war_league_name?: string
   members: number
-  memberList?: ClanMember[]
+  member_list?: ClanMember[] // Changed from memberList to match API response
   updated_at?: string
 }
 
@@ -102,9 +102,9 @@ export const useClanStore = defineStore('clan', {
     isClanLoaded: (state) => !!state.clan,
     memberCount: (state) => state.clan?.members || 0,
     topDonators: (state) => {
-      if (!state.clan?.memberList) return []
+      if (!state.clan?.member_list) return []
 
-      return [...state.clan.memberList].sort((a, b) => b.donations - a.donations).slice(0, 3)
+      return [...state.clan.member_list].sort((a, b) => b.donations - a.donations).slice(0, 3)
     },
     // Calculate war win rate
     warWinRate: (state) => {

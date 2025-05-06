@@ -25,9 +25,6 @@ const formatClanType = (type: string) => {
   return type.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase())
 }
 
-// Function to get top 3 donators
-const topDonators = computed(() => clanStore.topDonators)
-
 // Function to toggle showing all members
 const toggleMembersList = () => {
   showAllMembers.value = !showAllMembers.value
@@ -36,6 +33,7 @@ const toggleMembersList = () => {
 // Function to format role for display
 const formatRole = (role: string) => {
   if (role === 'coLeader') return 'Co-Leader'
+  if (role === 'admin') return 'Elder'
   return role.charAt(0).toUpperCase() + role.slice(1)
 }
 </script>
@@ -67,7 +65,7 @@ const formatRole = (role: string) => {
               stroke-linecap="round"
               stroke-linejoin="round"
               stroke-width="2"
-              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.001 8.001 0 01-15.357-2m15.357 2H15"
             />
           </svg>
           Refresh
@@ -132,7 +130,7 @@ const formatRole = (role: string) => {
           {{ clan.description }}
         </div>
 
-        <div class="mt-4 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+        <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
           <!-- Main Stats -->
           <div>
             <h3 class="text-lg font-semibold mb-2 border-b border-gray-200">Clan Info</h3>
@@ -196,145 +194,104 @@ const formatRole = (role: string) => {
               </div>
             </div>
           </div>
-
-          <!-- Top 3 Donators section -->
-          <div v-if="topDonators && topDonators.length > 0">
-            <h3 class="text-lg font-semibold mb-2 border-b border-gray-200">Top 3 Donators</h3>
-            <div class="space-y-2">
-              <div
-                v-for="(member, index) in topDonators"
-                :key="member.tag"
-                class="flex justify-between"
-              >
-                <span class="truncate max-w-[150px]">{{ index + 1 }}. {{ member.name }}</span>
-                <span class="font-semibold">{{ member.donations }}</span>
-              </div>
-            </div>
-          </div>
         </div>
 
         <!-- Members List Section -->
         <div class="mt-6">
-          <div class="flex justify-between items-center border-b border-gray-200 mb-3">
+          <div class="border-b border-gray-200 mb-3">
             <h3 class="text-lg font-semibold">Clan Members</h3>
-            <button
-              @click="toggleMembersList"
-              class="text-clash-blue hover:text-blue-700 text-sm font-medium"
-            >
-              {{ showAllMembers ? 'Hide Members' : 'Show All Members' }}
-            </button>
           </div>
-
-          <div v-if="showAllMembers && clan.memberList && clan.memberList.length > 0" class="mt-4">
-            <div class="overflow-x-auto">
+          
+          <div v-if="clan.member_list && clan.member_list.length > 0">
+            <!-- Preview of first 5 members when not showing all members -->
+            <div v-if="!showAllMembers" class="mt-4">
               <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                 <thead class="bg-gray-50 dark:bg-gray-800">
                   <tr>
-                    <th
-                      scope="col"
-                      class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                    >
-                      Rank
-                    </th>
-                    <th
-                      scope="col"
-                      class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                    >
-                      Name
-                    </th>
-                    <th
-                      scope="col"
-                      class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                    >
-                      Role
-                    </th>
-                    <th
-                      scope="col"
-                      class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                    >
-                      Level
-                    </th>
-                    <th
-                      scope="col"
-                      class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                    >
-                      Trophies
-                    </th>
-                    <th
-                      scope="col"
-                      class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                    >
-                      Donations
-                    </th>
-                    <th
-                      scope="col"
-                      class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                    >
-                      Received
-                    </th>
+                    <th scope="col" class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Rank</th>
+                    <th scope="col" class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Name</th>
+                    <th scope="col" class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Role</th>
+                    <th scope="col" class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Level</th>
+                    <th scope="col" class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Trophies</th>
                   </tr>
                 </thead>
-                <tbody
-                  class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-800"
-                >
-                  <tr
-                    v-for="(member, index) in clan.memberList"
-                    :key="member.tag"
-                    class="hover:bg-gray-50 dark:hover:bg-gray-800"
-                  >
-                    <td
-                      class="px-3 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400"
-                    >
-                      {{ index + 1 }}
-                    </td>
+                <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-800">
+                  <tr v-for="(member, index) in clan.member_list.slice(0, 5)" :key="member.tag" class="hover:bg-gray-50 dark:hover:bg-gray-800">
+                    <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ index + 1 }}</td>
                     <td class="px-3 py-2 whitespace-nowrap">
-                      <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
-                        {{ member.name }}
-                      </div>
-                      <div class="text-xs text-gray-500 dark:text-gray-400">
-                        #{{ member.tag.replace('#', '') }}
-                      </div>
+                      <div class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ member.name }}</div>
+                      <div class="text-xs text-gray-500 dark:text-gray-400">#{{ member.tag.replace('#', '') }}</div>
                     </td>
                     <td class="px-3 py-2 whitespace-nowrap">
                       <span
                         :class="{
                           'px-2 py-0.5 text-xs rounded-full': true,
-                          'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200':
-                            member.role === 'leader',
-                          'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200':
-                            member.role === 'coLeader',
-                          'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200':
-                            member.role === 'admin',
-                          'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200':
-                            member.role === 'member',
+                          'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200': member.role === 'leader',
+                          'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200': member.role === 'coLeader',
+                          'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200': member.role === 'admin',
+                          'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200': member.role === 'member',
                         }"
                       >
                         {{ formatRole(member.role) }}
                       </span>
                     </td>
-                    <td
-                      class="px-3 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400"
-                    >
-                      {{ member.expLevel }}
-                    </td>
-                    <td
-                      class="px-3 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400"
-                    >
-                      {{ member.trophies }}
-                    </td>
-                    <td
-                      class="px-3 py-2 whitespace-nowrap text-sm font-medium text-green-600 dark:text-green-400"
-                    >
-                      {{ member.donations }}
-                    </td>
-                    <td
-                      class="px-3 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400"
-                    >
-                      {{ member.donationsReceived }}
-                    </td>
+                    <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ member.expLevel }}</td>
+                    <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ member.trophies }}</td>
                   </tr>
                 </tbody>
               </table>
+            </div>
+            
+            <!-- Full member list when showing all members -->
+            <div v-if="showAllMembers" class="mt-4 overflow-x-auto">
+              <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <thead class="bg-gray-50 dark:bg-gray-800">
+                  <tr>
+                    <th scope="col" class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Rank</th>
+                    <th scope="col" class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Name</th>
+                    <th scope="col" class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Role</th>
+                    <th scope="col" class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Level</th>
+                    <th scope="col" class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Trophies</th>
+                    <th scope="col" class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Donations</th>
+                    <th scope="col" class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Received</th>
+                  </tr>
+                </thead>
+                <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-800">
+                  <tr v-for="(member, index) in clan.member_list" :key="member.tag" class="hover:bg-gray-50 dark:hover:bg-gray-800">
+                    <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ index + 1 }}</td>
+                    <td class="px-3 py-2 whitespace-nowrap">
+                      <div class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ member.name }}</div>
+                      <div class="text-xs text-gray-500 dark:text-gray-400">#{{ member.tag.replace('#', '') }}</div>
+                    </td>
+                    <td class="px-3 py-2 whitespace-nowrap">
+                      <span
+                        :class="{
+                          'px-2 py-0.5 text-xs rounded-full': true,
+                          'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200': member.role === 'leader',
+                          'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200': member.role === 'coLeader',
+                          'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200': member.role === 'admin',
+                          'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200': member.role === 'member',
+                        }"
+                      >
+                        {{ formatRole(member.role) }}
+                      </span>
+                    </td>
+                    <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ member.expLevel }}</td>
+                    <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ member.trophies }}</td>
+                    <td class="px-3 py-2 whitespace-nowrap text-sm font-medium text-green-600 dark:text-green-400">{{ member.donations }}</td>
+                    <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ member.donationsReceived }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            
+            <div class="mt-4 text-center">
+              <button
+                @click="toggleMembersList"
+                class="bg-clash-blue hover:bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-medium transition-colors"
+              >
+                {{ showAllMembers ? 'Hide Members' : 'Show All Members' }}
+              </button>
             </div>
           </div>
         </div>
