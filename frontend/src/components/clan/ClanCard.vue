@@ -4,6 +4,7 @@ import { useClanStore, type Clan } from '@/stores/clan'
 
 const clanStore = useClanStore()
 const isRefreshing = ref(false)
+const showAllMembers = ref(false)
 
 const clan = computed(() => clanStore.clan)
 const lastFetched = computed(() => clanStore.formattedLastFetched)
@@ -24,8 +25,19 @@ const formatClanType = (type: string) => {
   return type.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase())
 }
 
-// Function to get top 5 donators
+// Function to get top 3 donators
 const topDonators = computed(() => clanStore.topDonators)
+
+// Function to toggle showing all members
+const toggleMembersList = () => {
+  showAllMembers.value = !showAllMembers.value
+}
+
+// Function to format role for display
+const formatRole = (role: string) => {
+  if (role === 'coLeader') return 'Co-Leader'
+  return role.charAt(0).toUpperCase() + role.slice(1)
+}
 </script>
 
 <template>
@@ -85,7 +97,7 @@ const topDonators = computed(() => clanStore.topDonators)
         <h2 class="text-2xl font-bold text-clash-blue">{{ clan.name }}</h2>
         <p class="text-gray-600 dark:text-gray-300">#{{ clan.tag }}</p>
 
-        <!-- Clan type & location -->
+        <!-- Clan type, location, chat language & family friendly status -->
         <div class="mt-2 flex flex-wrap gap-2">
           <span
             class="px-2 py-0.5 bg-clash-blue bg-opacity-10 text-clash-blue rounded-full text-xs"
@@ -97,6 +109,12 @@ const topDonators = computed(() => clanStore.topDonators)
             class="px-2 py-0.5 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full text-xs"
           >
             {{ clan.location_name }}
+          </span>
+          <span
+            v-if="clan.chat_language"
+            class="px-2 py-0.5 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full text-xs"
+          >
+            {{ clan.chat_language }}
           </span>
           <span
             v-if="clan.is_family_friendly === false"
@@ -179,9 +197,9 @@ const topDonators = computed(() => clanStore.topDonators)
             </div>
           </div>
 
-          <!-- Top Donators section -->
-          <div v-if="topDonators.length > 0">
-            <h3 class="text-lg font-semibold mb-2 border-b border-gray-200">Top Donators</h3>
+          <!-- Top 3 Donators section -->
+          <div v-if="topDonators && topDonators.length > 0">
+            <h3 class="text-lg font-semibold mb-2 border-b border-gray-200">Top 3 Donators</h3>
             <div class="space-y-2">
               <div
                 v-for="(member, index) in topDonators"
@@ -191,6 +209,132 @@ const topDonators = computed(() => clanStore.topDonators)
                 <span class="truncate max-w-[150px]">{{ index + 1 }}. {{ member.name }}</span>
                 <span class="font-semibold">{{ member.donations }}</span>
               </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Members List Section -->
+        <div class="mt-6">
+          <div class="flex justify-between items-center border-b border-gray-200 mb-3">
+            <h3 class="text-lg font-semibold">Clan Members</h3>
+            <button
+              @click="toggleMembersList"
+              class="text-clash-blue hover:text-blue-700 text-sm font-medium"
+            >
+              {{ showAllMembers ? 'Hide Members' : 'Show All Members' }}
+            </button>
+          </div>
+
+          <div v-if="showAllMembers && clan.memberList && clan.memberList.length > 0" class="mt-4">
+            <div class="overflow-x-auto">
+              <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <thead class="bg-gray-50 dark:bg-gray-800">
+                  <tr>
+                    <th
+                      scope="col"
+                      class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                    >
+                      Rank
+                    </th>
+                    <th
+                      scope="col"
+                      class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                    >
+                      Name
+                    </th>
+                    <th
+                      scope="col"
+                      class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                    >
+                      Role
+                    </th>
+                    <th
+                      scope="col"
+                      class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                    >
+                      Level
+                    </th>
+                    <th
+                      scope="col"
+                      class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                    >
+                      Trophies
+                    </th>
+                    <th
+                      scope="col"
+                      class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                    >
+                      Donations
+                    </th>
+                    <th
+                      scope="col"
+                      class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                    >
+                      Received
+                    </th>
+                  </tr>
+                </thead>
+                <tbody
+                  class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-800"
+                >
+                  <tr
+                    v-for="(member, index) in clan.memberList"
+                    :key="member.tag"
+                    class="hover:bg-gray-50 dark:hover:bg-gray-800"
+                  >
+                    <td
+                      class="px-3 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400"
+                    >
+                      {{ index + 1 }}
+                    </td>
+                    <td class="px-3 py-2 whitespace-nowrap">
+                      <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
+                        {{ member.name }}
+                      </div>
+                      <div class="text-xs text-gray-500 dark:text-gray-400">
+                        #{{ member.tag.replace('#', '') }}
+                      </div>
+                    </td>
+                    <td class="px-3 py-2 whitespace-nowrap">
+                      <span
+                        :class="{
+                          'px-2 py-0.5 text-xs rounded-full': true,
+                          'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200':
+                            member.role === 'leader',
+                          'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200':
+                            member.role === 'coLeader',
+                          'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200':
+                            member.role === 'admin',
+                          'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200':
+                            member.role === 'member',
+                        }"
+                      >
+                        {{ formatRole(member.role) }}
+                      </span>
+                    </td>
+                    <td
+                      class="px-3 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400"
+                    >
+                      {{ member.expLevel }}
+                    </td>
+                    <td
+                      class="px-3 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400"
+                    >
+                      {{ member.trophies }}
+                    </td>
+                    <td
+                      class="px-3 py-2 whitespace-nowrap text-sm font-medium text-green-600 dark:text-green-400"
+                    >
+                      {{ member.donations }}
+                    </td>
+                    <td
+                      class="px-3 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400"
+                    >
+                      {{ member.donationsReceived }}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </div>

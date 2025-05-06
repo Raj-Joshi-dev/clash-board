@@ -9,6 +9,8 @@ export interface ClanMember {
   trophies: number
   donations: number
   donationsReceived: number
+  clanRank?: number
+  previousClanRank?: number
 }
 
 export interface Clan {
@@ -18,6 +20,7 @@ export interface Clan {
   type: string
   description?: string
   location_name?: string
+  chat_language?: string
   is_family_friendly: boolean
   badge_urls: Record<string, string>
   clan_level: number
@@ -101,7 +104,7 @@ export const useClanStore = defineStore('clan', {
     topDonators: (state) => {
       if (!state.clan?.memberList) return []
 
-      return [...state.clan.memberList].sort((a, b) => b.donations - a.donations).slice(0, 5)
+      return [...state.clan.memberList].sort((a, b) => b.donations - a.donations).slice(0, 3)
     },
     // Calculate war win rate
     warWinRate: (state) => {
