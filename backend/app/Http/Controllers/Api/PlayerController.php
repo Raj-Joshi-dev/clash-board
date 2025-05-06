@@ -194,7 +194,7 @@ class PlayerController extends Controller
         if (!$playerData) {
             return response()->json([
                 'success' => false,
-                'message' => 'Player not found in Clash of Clans API'
+                'message' => 'Player not found!'
             ], 404);
         }
 

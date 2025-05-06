@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { usePlayerStore, type Player } from '@/stores/player'
 
 const playerStore = usePlayerStore()
+const isRefreshing = ref(false)
 
 const player = computed(() => playerStore.player)
 
@@ -10,10 +11,48 @@ const player = computed(() => playerStore.player)
 const formatRatio = (value: number) => {
   return value.toFixed(2)
 }
+
+// Function to refresh player data
+const refreshPlayerData = async () => {
+  isRefreshing.value = true
+  try {
+    await playerStore.refreshPlayerData()
+  } finally {
+    isRefreshing.value = false
+  }
+}
 </script>
 
 <template>
   <div v-if="player" class="player-card bg-clash-light dark:bg-clash-dark p-6 rounded-lg shadow-lg">
+    <div class="flex justify-between items-start mb-4">
+      <h2 class="text-2xl font-bold text-clash-blue">Player Details</h2>
+      <button
+        @click="refreshPlayerData"
+        class="bg-clash-blue hover:bg-blue-600 text-white px-3 py-1 rounded text-sm flex items-center transition-colors"
+        :disabled="isRefreshing || playerStore.isLoading"
+      >
+        <span v-if="isRefreshing">Refreshing...</span>
+        <span v-else>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-4 w-4 mr-1 inline-block"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+            />
+          </svg>
+          Refresh
+        </span>
+      </button>
+    </div>
+
     <div class="flex flex-col md:flex-row items-start gap-6">
       <!-- Player Avatar -->
       <div
