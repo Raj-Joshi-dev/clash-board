@@ -26,7 +26,7 @@ const refreshPlayerData = async () => {
 
 <template>
   <div v-if="player" class="player-card bg-clash-light dark:bg-clash-dark p-6 rounded-lg shadow-lg">
-    <div class="flex justify-between items-start mb-4">
+    <div class="flex justify-between items-start mb-6">
       <div>
         <h2 class="text-2xl font-bold text-clash-blue">Player Details</h2>
         <p v-if="lastFetched" class="text-sm text-gray-500 dark:text-gray-400 mt-1">
@@ -59,7 +59,7 @@ const refreshPlayerData = async () => {
       </button>
     </div>
 
-    <div class="flex flex-col md:flex-row items-start gap-6">
+    <div class="flex flex-col lg:flex-row items-start gap-6">
       <!-- Player Avatar -->
       <div
         class="avatar bg-clash-blue rounded-full w-24 h-24 flex items-center justify-center text-white text-4xl font-bold"
@@ -68,7 +68,7 @@ const refreshPlayerData = async () => {
       </div>
 
       <!-- Player Info -->
-      <div class="flex-grow">
+      <div class="flex-grow w-full">
         <h2 class="text-2xl font-bold text-clash-blue">{{ player.name }}</h2>
         <p class="text-gray-600 dark:text-gray-300">#{{ player.tag }}</p>
 
@@ -84,7 +84,7 @@ const refreshPlayerData = async () => {
           </span>
         </div>
 
-        <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="mt-4 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           <!-- Main Stats -->
           <div>
             <h3 class="text-lg font-semibold mb-2 border-b border-gray-200">Main Village</h3>

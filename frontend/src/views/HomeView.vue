@@ -12,11 +12,11 @@ import PlayerCard from '../components/player/PlayerCard.vue'
       </p>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
       <div class="lg:col-span-1">
         <PlayerSearch />
       </div>
-      <div class="lg:col-span-2">
+      <div class="lg:col-span-3">
         <PlayerCard />
       </div>
     </div>
