@@ -31,6 +31,7 @@ interface PlayerState {
   isLoading: boolean
   error: string | null
   isRefreshing: boolean // New flag to track if we're refreshing data vs. initial load
+  lastFetched: string | null // Add timestamp of last fetch
 }
 
 export const usePlayerStore = defineStore('player', {
@@ -39,6 +40,7 @@ export const usePlayerStore = defineStore('player', {
     isLoading: false,
     error: null,
     isRefreshing: false,
+    lastFetched: null,
   }),
 
   actions: {
@@ -73,6 +75,12 @@ export const usePlayerStore = defineStore('player', {
             playerData.donationsReceived = playerData.donations_received || 0
 
             this.player = playerData
+
+            // Store the fetched_at timestamp from the database response
+            if (response.data.fetched_at) {
+              this.lastFetched = response.data.fetched_at
+            }
+
             return playerData
           }
         } catch (dbError: any) {
@@ -116,6 +124,12 @@ export const usePlayerStore = defineStore('player', {
 
           this.player = playerData
           this.error = null
+
+          // Store the fetch timestamp
+          if (response.data.fetched_at) {
+            this.lastFetched = response.data.fetched_at
+          }
+
           return playerData
         } else {
           throw new Error(response.data.message || 'Failed to fetch player data from API')
@@ -146,6 +160,7 @@ export const usePlayerStore = defineStore('player', {
 
     clearPlayer() {
       this.player = null
+      this.lastFetched = null
     },
   },
 
@@ -154,6 +169,22 @@ export const usePlayerStore = defineStore('player', {
     donationRatio: (state) => {
       if (!state.player || state.player.donationsReceived === 0) return 0
       return state.player.donations / state.player.donationsReceived
+    },
+
+    // Format the last fetched date in a user-friendly way
+    formattedLastFetched: (state) => {
+      if (!state.lastFetched) return null
+
+      try {
+        const date = new Date(state.lastFetched)
+        return new Intl.DateTimeFormat('en-US', {
+          dateStyle: 'medium',
+          timeStyle: 'short',
+        }).format(date)
+      } catch (error) {
+        console.error('Error formatting date:', error)
+        return state.lastFetched
+      }
     },
   },
 })

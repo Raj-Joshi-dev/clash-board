@@ -6,6 +6,7 @@ const playerStore = usePlayerStore()
 const isRefreshing = ref(false)
 
 const player = computed(() => playerStore.player)
+const lastFetched = computed(() => playerStore.formattedLastFetched)
 
 // Helper function to format donation ratio
 const formatRatio = (value: number) => {
@@ -26,7 +27,12 @@ const refreshPlayerData = async () => {
 <template>
   <div v-if="player" class="player-card bg-clash-light dark:bg-clash-dark p-6 rounded-lg shadow-lg">
     <div class="flex justify-between items-start mb-4">
-      <h2 class="text-2xl font-bold text-clash-blue">Player Details</h2>
+      <div>
+        <h2 class="text-2xl font-bold text-clash-blue">Player Details</h2>
+        <p v-if="lastFetched" class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+          Last updated: {{ lastFetched }}
+        </p>
+      </div>
       <button
         @click="refreshPlayerData"
         class="bg-clash-blue hover:bg-blue-600 text-white px-3 py-1 rounded text-sm flex items-center transition-colors"

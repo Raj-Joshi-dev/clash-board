@@ -83,7 +83,8 @@ class PlayerController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $player
+            'data' => $player,
+            'fetched_at' => $player->updated_at->toIso8601String()
         ]);
     }
 
@@ -194,12 +195,15 @@ class PlayerController extends Controller
         if (!$playerData) {
             return response()->json([
                 'success' => false,
-                'message' => 'Player not found!'
+                'message' => 'Player not found in Clash of Clans API'
             ], 404);
         }
 
         // Check if player already exists in our database
         $player = Player::where('tag', $tag)->first();
+
+        // Current time to use for both fetched_at and updated_at
+        $now = now();
 
         // Prepare player data
         $playerAttributes = [
@@ -210,6 +214,7 @@ class PlayerController extends Controller
             'trophies' => $playerData['trophies'],
             'best_trophies' => $playerData['bestTrophies'],
             'war_stars' => $playerData['warStars'],
+            'updated_at' => $now, // Explicitly set updated_at
         ];
 
         // Add clan information if available
@@ -245,7 +250,7 @@ class PlayerController extends Controller
             'success' => true,
             'message' => $message,
             'data' => $player,
-            'fetched_at' => now()->toIso8601String()
+            'fetched_at' => $now->toIso8601String()
         ], $player->wasRecentlyCreated ? 201 : 200);
     }
 }
