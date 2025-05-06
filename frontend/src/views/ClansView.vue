@@ -1,5 +1,9 @@
 <script setup lang="ts">
 import ClanSearch from '../components/clan/ClanSearch.vue'
+import ClanCard from '../components/clan/ClanCard.vue'
+import { useClanStore } from '@/stores/clan'
+
+const clanStore = useClanStore()
 </script>
 
 <template>
@@ -16,9 +20,11 @@ import ClanSearch from '../components/clan/ClanSearch.vue'
         <ClanSearch />
       </div>
       <div class="lg:col-span-3">
-        <div v-if="false" class="bg-clash-light dark:bg-clash-dark p-6 rounded-lg shadow-lg">
-          <!-- Placeholder for clan details component -->
-          <p class="text-center text-gray-500">Clan details will be displayed here</p>
+        <ClanCard v-if="clanStore.isClanLoaded" />
+        <div v-else class="bg-clash-light dark:bg-clash-dark p-6 rounded-lg shadow-lg">
+          <p class="text-center text-gray-500">
+            Use the search box to find a clan by tag. Clan details will be displayed here.
+          </p>
         </div>
       </div>
     </div>

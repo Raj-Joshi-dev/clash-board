@@ -35,12 +35,15 @@ export interface Clan {
   war_league_name?: string
   members: number
   memberList?: ClanMember[]
+  updated_at?: string
 }
 
 interface ClanState {
   clan: Clan | null
   isLoading: boolean
   error: string | null
+  lastFetched: string | null
+  isRefreshing: boolean
 }
 
 export const useClanStore = defineStore('clan', {
@@ -48,29 +51,47 @@ export const useClanStore = defineStore('clan', {
     clan: null,
     isLoading: false,
     error: null,
+    lastFetched: null,
+    isRefreshing: false,
   }),
 
   actions: {
-    async fetchClan(tag: string) {
+    async fetchClan(tag: string, forceRefresh = false) {
       this.isLoading = true
       this.error = null
+      this.isRefreshing = forceRefresh
 
       try {
         // Clean the tag by removing the # if present
         const cleanTag = tag.startsWith('#') ? tag.substring(1) : tag
 
         const response = await api.get(`/clans/${cleanTag}`)
-        this.clan = response.data.data
+        if (response.data.success && response.data.data) {
+          this.clan = response.data.data
+
+          // Store the updated_at timestamp - with null check
+          if (this.clan && this.clan.updated_at) {
+            this.lastFetched = this.clan.updated_at
+          }
+        }
       } catch (error: any) {
         this.error = error.response?.data?.message || 'Failed to fetch clan data'
         console.error('Error fetching clan:', error)
       } finally {
         this.isLoading = false
+        this.isRefreshing = false
+      }
+    },
+
+    async refreshClanData() {
+      if (this.clan?.tag) {
+        await this.fetchClan(this.clan.tag, true)
       }
     },
 
     clearClan() {
       this.clan = null
+      this.lastFetched = null
     },
   },
 
@@ -81,6 +102,27 @@ export const useClanStore = defineStore('clan', {
       if (!state.clan?.memberList) return []
 
       return [...state.clan.memberList].sort((a, b) => b.donations - a.donations).slice(0, 5)
+    },
+    // Calculate war win rate
+    warWinRate: (state) => {
+      if (!state.clan) return 0
+      const totalWars = state.clan.war_wins + state.clan.war_losses + state.clan.war_ties
+      return totalWars > 0 ? Math.round((state.clan.war_wins / totalWars) * 100) : 0
+    },
+    // Format the last fetched date in a user-friendly way
+    formattedLastFetched: (state) => {
+      if (!state.lastFetched) return null
+
+      try {
+        const date = new Date(state.lastFetched)
+        return new Intl.DateTimeFormat('en-US', {
+          dateStyle: 'medium',
+          timeStyle: 'short',
+        }).format(date)
+      } catch (error) {
+        console.error('Error formatting date:', error)
+        return state.lastFetched
+      }
     },
   },
 })

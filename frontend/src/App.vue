@@ -8,8 +8,12 @@ import { RouterLink, RouterView } from 'vue-router'
       <div class="container-fluid mx-auto px-4 flex justify-between items-center">
         <h1 class="text-2xl font-bold">Clash Board</h1>
         <nav class="space-x-4">
-          <RouterLink to="/" class="hover:text-gray-200 transition-colors">Home</RouterLink>
-          <RouterLink to="/clans" class="hover:text-gray-200 transition-colors">Clans</RouterLink>
+          <RouterLink to="/" class="hover:text-gray-200 transition-colors nav-link"
+            >Home</RouterLink
+          >
+          <RouterLink to="/clans" class="hover:text-gray-200 transition-colors nav-link"
+            >Clans</RouterLink
+          >
         </nav>
       </div>
     </header>
@@ -50,6 +54,36 @@ body {
   .container-fluid {
     width: 85%;
     max-width: 1800px; /* Still set a max to prevent excessive width on ultra-wide screens */
+  }
+}
+
+/* Fix the yellow tint on router links */
+.nav-link {
+  color: white;
+  text-decoration: none;
+}
+
+.nav-link:hover,
+.nav-link.router-link-active {
+  color: rgba(219, 234, 254, 1); /* Light blue hover color */
+}
+
+a {
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+/* Override the green link color */
+a:not(.nav-link),
+.green {
+  color: #3b82f6; /* Tailwind blue-500 */
+  transition: 0.2s;
+}
+
+@media (hover: hover) {
+  a:not(.nav-link):hover {
+    color: #2563eb; /* Tailwind blue-600 */
+    background-color: transparent;
   }
 }
 </style>
